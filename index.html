@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Виртуальное пианино</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .piano {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        .key {
+            width: 50px;
+            height: 200px;
+            margin: 2px;
+            border: 1px solid black;
+            background: white;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .key.black {
+            width: 30px;
+            height: 120px;
+            background: black;
+            color: white;
+            position: relative;
+            margin-left: -15px;
+            margin-right: -15px;
+            z-index: 2;
+        }
+        .key:active, .active {
+            background: lightgray;
+        }
+        .key.black:active, .black.active {
+            background: darkgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Виртуальное пианино</h1>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5"> Громкость
+    <button id="playMelody">Проиграть мелодию</button>
+    <div class="piano">
+        <div class="key" data-note="C4" data-key="A">C</div>
+        <div class="key black" data-note="C#4" data-key="W">C#</div>
+        <div class="key" data-note="D4" data-key="S">D</div>
+        <div class="key black" data-note="D#4" data-key="E">D#</div>
+        <div class="key" data-note="E4" data-key="D">E</div>
+        <div class="key" data-note="F4" data-key="F">F</div>
+        <div class="key black" data-note="F#4" data-key="T">F#</div>
+        <div class="key" data-note="G4" data-key="G">G</div>
+        <div class="key black" data-note="G#4" data-key="Y">G#</div>
+        <div class="key" data-note="A4" data-key="H">A</div>
+        <div class="key black" data-note="A#4" data-key="U">A#</div>
+        <div class="key" data-note="B4" data-key="J">B</div>
+    </div>
+    <script>
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const volumeControl = document.getElementById("volume");
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = volumeControl.value;
+        gainNode.connect(audioContext.destination);
+
+        volumeControl.addEventListener("input", () => {
+            gainNode.gain.value = volumeControl.value;
+        });
+
+        function playNote(note, duration = 300) {
+            const osc = audioContext.createOscillator();
+            osc.frequency.value = getFrequency(note);
+            osc.type = "sine";
+            osc.connect(gainNode);
+            osc.start();
+            setTimeout(() => osc.stop(), duration);
+        }
+
+        function getFrequency(note) {
+            const notes = {
+                "C4": 261.63, "C#4": 277.18, "D4": 293.66, "D#4": 311.13, "E4": 329.63,
+                "F4": 349.23, "F#4": 369.99, "G4": 392.00, "G#4": 415.30, "A4": 440.00,
+                "A#4": 466.16, "B4": 493.88
+            };
+            return notes[note];
+        }
+
+        document.querySelectorAll(".key").forEach(key => {
+            key.addEventListener("click", () => playNote(key.dataset.note));
+        });
+
+        document.addEventListener("keydown", event => {
+            const key = event.key.toUpperCase();
+            const pianoKey = document.querySelector(`.key[data-key='${key}']`);
+            if (pianoKey) {
+                playNote(pianoKey.dataset.note);
+                pianoKey.classList.add("active");
+            }
+        });
+
+        document.addEventListener("keyup", event => {
+            const key = event.key.toUpperCase();
+            const pianoKey = document.querySelector(`.key[data-key='${key}']`);
+            if (pianoKey) {
+                pianoKey.classList.remove("active");
+            }
+        });
+
+        function playMelody() {
+            const melody = ["G4", "G4", "F4", "D4", "E4", "F4"];
+            let delay = 0;
+            melody.forEach((note, index) => {
+                setTimeout(() => playNote(note, 400), delay);
+                delay += 500;
+            });
+        }
+        
+        document.getElementById("playMelody").addEventListener("click", playMelody);
+    </script>
+</body>
+</html>
