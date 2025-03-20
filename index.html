@@ -6,6 +6,9 @@
     <title>Digital piano</title>
     <style>
         body {
+            /* gradieent background */
+            background: linear-gradient(to bottom, rgb(135, 122, 231), rgb(56, 30, 250));
+           
             text-align: center;
             font-family: Arial, sans-serif;
         }
@@ -18,7 +21,10 @@
             width: 50px;
             height: 200px;
             margin: 2px;
-            border: 1px solid black;
+            /* border: 1px solid black; */
+            border-radius: 15px;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+            border-bottom: 5px solid darkgray;
             background: white;
             display: flex;
             align-items: flex-end;
@@ -30,7 +36,8 @@
         .key.black {
             width: 30px;
             height: 120px;
-            background: black;
+            background: rgb(50, 50, 50);
+            border-bottom: 5px solid black;
             color: white;
             position: relative;
             margin-left: -15px;
@@ -48,7 +55,6 @@
 <body>
     <h1>Digital piano</h1>
     <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5"> Volume
-    <button id="playMelody">Misic1</button>
     <div class="piano">
         <div class="key" data-note="C4" data-key="A">C</div>
         <div class="key black" data-note="C#4" data-key="W">C#</div>
@@ -63,17 +69,20 @@
         <div class="key black" data-note="A#4" data-key="U">A#</div>
         <div class="key" data-note="B4" data-key="J">B</div>
     </div>
+    <div>
+        <button id="playMelody">Misic 1</button>
+    </div>
     <script>
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const volumeControl = document.getElementById("volume");
         const gainNode = audioContext.createGain();
         gainNode.gain.value = volumeControl.value;
         gainNode.connect(audioContext.destination);
-
+ 
         volumeControl.addEventListener("input", () => {
             gainNode.gain.value = volumeControl.value;
         });
-
+ 
         function playNote(note, duration = 300) {
             const osc = audioContext.createOscillator();
             osc.frequency.value = getFrequency(note);
@@ -82,7 +91,7 @@
             osc.start();
             setTimeout(() => osc.stop(), duration);
         }
-
+ 
         function getFrequency(note) {
             const notes = {
                 "C4": 261.63, "C#4": 277.18, "D4": 293.66, "D#4": 311.13, "E4": 329.63,
@@ -91,11 +100,11 @@
             };
             return notes[note];
         }
-
+ 
         document.querySelectorAll(".key").forEach(key => {
             key.addEventListener("click", () => playNote(key.dataset.note));
         });
-
+ 
         document.addEventListener("keydown", event => {
             const key = event.key.toUpperCase();
             const pianoKey = document.querySelector(`.key[data-key='${key}']`);
@@ -104,7 +113,7 @@
                 pianoKey.classList.add("active");
             }
         });
-
+ 
         document.addEventListener("keyup", event => {
             const key = event.key.toUpperCase();
             const pianoKey = document.querySelector(`.key[data-key='${key}']`);
@@ -112,7 +121,7 @@
                 pianoKey.classList.remove("active");
             }
         });
-
+ 
         function playMelody() {
             const melody = ["G4", "G4", "F4", "D4", "E4", "F4"];
             let delay = 0;
@@ -121,8 +130,10 @@
                 delay += 500;
             });
         }
-        
+       
         document.getElementById("playMelody").addEventListener("click", playMelody);
     </script>
 </body>
 </html>
+ 
+ 
