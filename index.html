@@ -37,7 +37,7 @@
         .key.black {
             width: 30px;
             height: 120px;
-            background: rgb(50, 50, 50);
+            background: #323232;
             border-bottom: 5px solid black;
             color: white;
             position: relative;
@@ -51,13 +51,22 @@
         .key.black:active, .black.active {
             background: darkgray;
         }
-
-        
-            
-    
-        
-
-        
+        .introduction{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .introduction p{
+            margin: 10px;
+        }
+        #playMelody{
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+            border-bottom: 5px solid darkgray;
+            background: white;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -78,67 +87,119 @@
         <div class="key" data-note="B4" data-key="J">B</div>
     </div>
     <div>
-        <button id="playMelody">Misic 1</button>
+        <h3>Toetsenbord ingangen voor piano</h3>
+        <div class="introduction">
+            <p>A - C4</p>
+            <p>S - D4</p>
+            <p>D - E4</p>
+            <p>F - F4</p>
+            <p>G - G4</p>
+            <p>H - A4</p>
+            <p>J - B4</p>
+            <p>W - C#4</p>
+            <p>E - D#4</p>
+            <p>T - F#4</p>
+            <p>Y - G#4</p>
+            <p>U - A#4</p>
+        </div>
+        <button id="playMelody">Muziek 1</button>
     </div>
     <script>
+        // Create a new AudioContext, which is necessary for generating and processing audio
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Get the volume control element from the HTML
         const volumeControl = document.getElementById("volume");
+
+        // Create a gain node to control the volume of the audio
         const gainNode = audioContext.createGain();
+
+        // Set the initial gain value based on the volume control's value
         gainNode.gain.value = volumeControl.value;
+
+        // Connect the gain node to the audio destination (speakers)
         gainNode.connect(audioContext.destination);
- 
+
+        // Add an event listener to the volume control to update the gain value when it changes
         volumeControl.addEventListener("input", () => {
             gainNode.gain.value = volumeControl.value;
         });
- 
+
+        // Function to play a note with a specified frequency and duration
         function playNote(note, duration = 300) {
+            // Create an oscillator node to generate the sound wave
             const osc = audioContext.createOscillator();
+
+            // Set the frequency of the oscillator based on the note
             osc.frequency.value = getFrequency(note);
+
+            // Set the waveform type to sine
             osc.type = "sine";
+
+            // Connect the oscillator to the gain node
             osc.connect(gainNode);
+
+            // Start the oscillator
             osc.start();
+
+            // Stop the oscillator after the specified duration
             setTimeout(() => osc.stop(), duration);
         }
- 
+
+        // Function to get the frequency of a note
         function getFrequency(note) {
+            // Object mapping note names to their corresponding frequencies
             const notes = {
                 "C4": 261.63, "C#4": 277.18, "D4": 293.66, "D#4": 311.13, "E4": 329.63,
                 "F4": 349.23, "F#4": 369.99, "G4": 392.00, "G#4": 415.30, "A4": 440.00,
                 "A#4": 466.16, "B4": 493.88
             };
+
+            // Return the frequency of the specified note
             return notes[note];
         }
- 
+
+        // Add click event listeners to all elements with the class "key"
         document.querySelectorAll(".key").forEach(key => {
             key.addEventListener("click", () => playNote(key.dataset.note));
         });
- 
+
+        // Add a keydown event listener to play notes when keyboard keys are pressed
         document.addEventListener("keydown", event => {
             const key = event.key.toUpperCase();
             const pianoKey = document.querySelector(`.key[data-key='${key}']`);
+
+            // If the key corresponds to a piano key, play the note and add the "active" class
             if (pianoKey) {
                 playNote(pianoKey.dataset.note);
                 pianoKey.classList.add("active");
             }
         });
- 
+
+        // Add a keyup event listener to remove the "active" class when a key is released
         document.addEventListener("keyup", event => {
             const key = event.key.toUpperCase();
             const pianoKey = document.querySelector(`.key[data-key='${key}']`);
+
+            // If the key corresponds to a piano key, remove the "active" class
             if (pianoKey) {
                 pianoKey.classList.remove("active");
             }
         });
- 
+
+        // Function to play a predefined melody
         function playMelody() {
             const melody = ["G4", "G4", "F4", "D4", "E4", "F4"];
             let delay = 0;
+
+            // Loop through each note in the melody and play it with a delay
             melody.forEach((note, index) => {
                 setTimeout(() => playNote(note, 400), delay);
                 delay += 500;
             });
         }
-       
+
+        // Add a click event listener to the "playMelody" button to play the melody
         document.getElementById("playMelody").addEventListener("click", playMelody);
     </script>
 </body>
