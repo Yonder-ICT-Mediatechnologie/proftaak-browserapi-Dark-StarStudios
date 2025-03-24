@@ -2,6 +2,10 @@
 
 # Digital Piano Project
 
+# Figma Link
+Onze Ontwerp link:
+https://www.figma.com/design/56C8NbNJGIClJGTcCsTUnL/Piano?node-id=0-1&t=iVck6H0jXhBFQ7bE-1
+
 ## Overzicht
 Dit project is een digitale piano die interactief bespeeld kan worden met zowel muisklikken als toetsenbordinvoer. De piano is gebouwd met HTML, CSS en JavaScript en maakt gebruik van de Web Audio API om geluid te genereren.
 
