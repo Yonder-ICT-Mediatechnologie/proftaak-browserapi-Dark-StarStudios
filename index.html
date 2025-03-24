@@ -6,10 +6,10 @@
     <title>Digital piano</title>
     <style>
         body {
-            /* gradieent background */
+            /* Achtergrondkleur gradient */
             background: linear-gradient(to bottom, rgb(135, 122, 231), rgb(56, 30, 250));
-           background-image: url(img/gras.avif);
-           background-size: cover;
+            background-image: url(img/gras.avif);
+            background-size: cover;
             text-align: center;
             font-family: Arial, sans-serif;
         }
@@ -22,7 +22,6 @@
             width: 50px;
             height: 200px;
             margin: 2px;
-            /* border: 1px solid black; */
             border-radius: 15px;
             box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
             border-bottom: 5px solid darkgray;
@@ -105,104 +104,102 @@
         <button id="playMelody">Muziek 1</button>
     </div>
     <script>
-        // Create a new AudioContext, which is necessary for generating and processing audio
+        // Maak een nieuwe AudioContext voor geluid
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Get the volume control element from the HTML
+        // Haal het volume element op
         const volumeControl = document.getElementById("volume");
 
-        // Create a gain node to control the volume of the audio
+        // Maak een gain node aan om het volume te regelen
         const gainNode = audioContext.createGain();
 
-        // Set the initial gain value based on the volume control's value
+        // Zet de beginwaarde van het volume
         gainNode.gain.value = volumeControl.value;
 
-        // Connect the gain node to the audio destination (speakers)
+        // Verbind de gain node met de audio-uitgang (speakers)
         gainNode.connect(audioContext.destination);
 
-        // Add an event listener to the volume control to update the gain value when it changes
+        // Zet een event listener op de volume-slider om het volume aan te passen
         volumeControl.addEventListener("input", () => {
             gainNode.gain.value = volumeControl.value;
         });
 
-        // Function to play a note with a specified frequency and duration
+        // Functie om een noot af te spelen met een bepaalde frequentie en duur
         function playNote(note, duration = 300) {
-            // Create an oscillator node to generate the sound wave
+            // Maak een oscillator aan om het geluid te maken
             const osc = audioContext.createOscillator();
 
-            // Set the frequency of the oscillator based on the note
+            // Zet de frequentie van de oscillator op basis van de noot
             osc.frequency.value = getFrequency(note);
 
-            // Set the waveform type to sine
+            // Zet het type golf op 'sine'
             osc.type = "sine";
 
-            // Connect the oscillator to the gain node
+            // Verbind de oscillator met de gain node
             osc.connect(gainNode);
 
-            // Start the oscillator
+            // Start het geluid
             osc.start();
 
-            // Stop the oscillator after the specified duration
+            // Stop het geluid na de opgegeven tijd
             setTimeout(() => osc.stop(), duration);
         }
 
-        // Function to get the frequency of a note
+        // Functie om de frequentie van een noot op te halen
         function getFrequency(note) {
-            // Object mapping note names to their corresponding frequencies
+            // Object met frequenties voor de noten
             const notes = {
                 "C4": 261.63, "C#4": 277.18, "D4": 293.66, "D#4": 311.13, "E4": 329.63,
                 "F4": 349.23, "F#4": 369.99, "G4": 392.00, "G#4": 415.30, "A4": 440.00,
                 "A#4": 466.16, "B4": 493.88
             };
 
-            // Return the frequency of the specified note
+            // Geef de frequentie van de noot terug
             return notes[note];
         }
 
-        // Add click event listeners to all elements with the class "key"
+        // Voeg event listeners toe om een noot af te spelen als je op de toetsen klikt
         document.querySelectorAll(".key").forEach(key => {
             key.addEventListener("click", () => playNote(key.dataset.note));
         });
 
-        // Add a keydown event listener to play notes when keyboard keys are pressed
+        // Voeg een event listener toe om de noot af te spelen bij toetsenbord indrukken
         document.addEventListener("keydown", event => {
             const key = event.key.toUpperCase();
             const pianoKey = document.querySelector(`.key[data-key='${key}']`);
 
-            // If the key corresponds to a piano key, play the note and add the "active" class
+            // Als de toets overeenkomt met een piano-toets, speel dan de noot en voeg de actieve klasse toe
             if (pianoKey) {
                 playNote(pianoKey.dataset.note);
                 pianoKey.classList.add("active");
             }
         });
 
-        // Add a keyup event listener to remove the "active" class when a key is released
+        // Voeg een event listener toe om de actieve klasse te verwijderen als je de toets loslaat
         document.addEventListener("keyup", event => {
             const key = event.key.toUpperCase();
             const pianoKey = document.querySelector(`.key[data-key='${key}']`);
 
-            // If the key corresponds to a piano key, remove the "active" class
+            // Verwijder de actieve klasse als de toets losgelaten wordt
             if (pianoKey) {
                 pianoKey.classList.remove("active");
             }
         });
 
-        // Function to play a predefined melody
+        // Functie om een vooraf gedefinieerde melodie af te spelen
         function playMelody() {
             const melody = ["G4", "G4", "F4", "D4", "E4", "F4"];
             let delay = 0;
 
-            // Loop through each note in the melody and play it with a delay
+            // Speel elke noot in de melodie met een vertraging
             melody.forEach((note, index) => {
                 setTimeout(() => playNote(note, 400), delay);
                 delay += 500;
             });
         }
 
-        // Add a click event listener to the "playMelody" button to play the melody
+        // Voeg een event listener toe aan de knop om de melodie af te spelen
         document.getElementById("playMelody").addEventListener("click", playMelody);
     </script>
 </body>
 </html>
- 
- 
